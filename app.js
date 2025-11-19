@@ -30,6 +30,7 @@ let isLoading = false;
 const STORAGE_KEY_SKIPPED = 'lunchPicker_skippedToday';
 const STORAGE_KEY_DATE = 'lunchPicker_lastDate';
 const STORAGE_KEY_PLACES_CACHE = 'lunchPicker_placesCache';
+const CACHE_VERSION = 'v2'; // Increment to invalidate old cache
 
 // DOM Elements
 const suggestionCard = document.getElementById('suggestion-card');
@@ -242,7 +243,17 @@ function getGradientForPlace(place) {
 function loadPlacesCache() {
     try {
         const cached = localStorage.getItem(STORAGE_KEY_PLACES_CACHE);
-        return cached ? JSON.parse(cached) : {};
+        if (!cached) return {};
+
+        const data = JSON.parse(cached);
+
+        // Check cache version and invalidate if outdated
+        if (data.version !== CACHE_VERSION) {
+            localStorage.removeItem(STORAGE_KEY_PLACES_CACHE);
+            return {};
+        }
+
+        return data.cache || {};
     } catch (error) {
         console.error('Error loading places cache:', error);
         return {};
@@ -252,7 +263,11 @@ function loadPlacesCache() {
 // Save places cache to localStorage
 function savePlacesCache(cache) {
     try {
-        localStorage.setItem(STORAGE_KEY_PLACES_CACHE, JSON.stringify(cache));
+        const data = {
+            version: CACHE_VERSION,
+            cache: cache
+        };
+        localStorage.setItem(STORAGE_KEY_PLACES_CACHE, JSON.stringify(data));
     } catch (error) {
         console.error('Error saving places cache:', error);
     }
