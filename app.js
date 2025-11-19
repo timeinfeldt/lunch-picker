@@ -365,11 +365,20 @@ async function fetchPlaceDetails(placeInput) {
             photoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=400&maxWidthPx=400&key=${PLACES_API_KEY}`;
         }
 
-        // Get multiple random reviews if available (for variety)
+        // Get multiple random reviews if available (prioritize 5-star reviews)
         let reviews = [];
         if (place.reviews && place.reviews.length > 0) {
+            // Filter for 5-star reviews first
+            let fiveStarReviews = place.reviews.filter(r => r.rating === 5);
+
+            // If not enough 5-star reviews, fall back to 4+ star reviews
+            if (fiveStarReviews.length < 5) {
+                const fourStarReviews = place.reviews.filter(r => r.rating >= 4);
+                fiveStarReviews = fourStarReviews.length > 0 ? fourStarReviews : place.reviews;
+            }
+
             // Shuffle and take up to 5 reviews
-            const shuffled = [...place.reviews].sort(() => Math.random() - 0.5);
+            const shuffled = [...fiveStarReviews].sort(() => Math.random() - 0.5);
             const reviewsToCache = shuffled.slice(0, Math.min(5, shuffled.length));
 
             reviews = reviewsToCache.map(r => ({
