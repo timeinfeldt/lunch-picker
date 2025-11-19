@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lunch Picker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🍽️ Lunch Picker</h1>
+        </header>
+
+        <main id="main-content">
+            <!-- Picker View -->
+            <div id="picker-view" class="view">
+                <div id="suggestion-card" class="card hidden">
+                    <h2>How about...</h2>
+                    <div id="place-name" class="place-name"></div>
+                    <div class="button-group">
+                        <button id="not-today-btn" class="btn btn-secondary">Not Today</button>
+                        <button id="never-again-btn" class="btn btn-danger">Never Again</button>
+                    </div>
+                </div>
+
+                <div id="empty-state" class="empty-state">
+                    <p>No lunch places added yet!</p>
+                    <p>Add your first place to get started.</p>
+                </div>
+
+                <button id="pick-place-btn" class="btn btn-primary">Pick a Place</button>
+            </div>
+
+            <!-- Add Place View -->
+            <div id="add-view" class="view hidden">
+                <div class="card">
+                    <h2>Add New Place</h2>
+                    <form id="add-place-form">
+                        <input
+                            type="text"
+                            id="place-input"
+                            placeholder="Enter place name"
+                            required
+                            autocomplete="off"
+                        >
+                        <div class="button-group">
+                            <button type="button" id="cancel-add-btn" class="btn btn-secondary">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Add</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- List View -->
+            <div id="list-view" class="view hidden">
+                <div class="card">
+                    <h2>Your Places</h2>
+                    <div id="places-list"></div>
+                    <button id="close-list-btn" class="btn btn-secondary">Close</button>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav">
+            <button id="nav-add-btn" class="nav-btn">
+                <span class="nav-icon">➕</span>
+                <span>Add Place</span>
+            </button>
+            <button id="nav-list-btn" class="nav-btn">
+                <span class="nav-icon">📋</span>
+                <span>My Places</span>
+            </button>
+        </nav>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
