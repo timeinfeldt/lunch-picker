@@ -365,22 +365,25 @@ async function fetchPlaceDetails(placeInput) {
             photoUrl = `https://places.googleapis.com/v1/${photoName}/media?maxHeightPx=400&maxWidthPx=400&key=${PLACES_API_KEY}`;
         }
 
-        // Get a random review if available
-        let review = null;
+        // Get multiple random reviews if available (for variety)
+        let reviews = [];
         if (place.reviews && place.reviews.length > 0) {
-            const randomReview = place.reviews[Math.floor(Math.random() * place.reviews.length)];
-            review = {
-                text: randomReview.text?.text || randomReview.text,
-                rating: randomReview.rating,
-                authorName: randomReview.authorAttribution?.displayName
-            };
+            // Shuffle and take up to 5 reviews
+            const shuffled = [...place.reviews].sort(() => Math.random() - 0.5);
+            const reviewsToCache = shuffled.slice(0, Math.min(5, shuffled.length));
+
+            reviews = reviewsToCache.map(r => ({
+                text: r.text?.text || r.text,
+                rating: r.rating,
+                authorName: r.authorAttribution?.displayName
+            }));
         }
 
         const placeData = {
             rating: place.rating,
             userRatingCount: place.userRatingCount,
             photoUrl,
-            review,
+            reviews,  // Store multiple reviews instead of one
             isClosed,
             cachedAt: Date.now()
         };
@@ -448,12 +451,13 @@ async function showSuggestion() {
             placeRating.classList.remove('hidden');
         }
 
-        // Show review if available
-        if (placeDetails.review) {
-            const reviewText = placeDetails.review.text.length > 150
-                ? placeDetails.review.text.substring(0, 150) + '...'
-                : placeDetails.review.text;
-            placeReview.innerHTML = `<div class="review-text">"${reviewText}"</div><div class="review-author">— ${placeDetails.review.authorName}</div>`;
+        // Show a random review from the cached reviews
+        if (placeDetails.reviews && placeDetails.reviews.length > 0) {
+            const randomReview = placeDetails.reviews[Math.floor(Math.random() * placeDetails.reviews.length)];
+            const reviewText = randomReview.text.length > 150
+                ? randomReview.text.substring(0, 150) + '...'
+                : randomReview.text;
+            placeReview.innerHTML = `<div class="review-text">"${reviewText}"</div><div class="review-author">— ${randomReview.authorName}</div>`;
             placeReview.classList.remove('hidden');
         }
 
