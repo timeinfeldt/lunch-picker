@@ -127,7 +127,7 @@ async function loadPlacesFromSheet() {
         const csvText = await response.text();
         const rows = csvText.trim().split('\n');
 
-        // Parse CSV: now expecting two columns (Name, URL)
+        // Parse CSV: expecting three columns (Name, URL, Place ID)
         places = rows
             .map((row, index) => {
                 // Skip first row if it looks like a header
@@ -140,10 +140,11 @@ async function loadPlacesFromSheet() {
                     return null;
                 }
 
-                // Format: { name: "Display Name", url: "URL or empty" }
+                // Format: { name: "Display Name", url: "URL or empty", placeId: "Place ID or empty" }
                 return {
                     name: columns[0].trim(),
-                    url: columns[1]?.trim() || ''
+                    url: columns[1]?.trim() || '',
+                    placeId: columns[2]?.trim() || ''
                 };
             })
             .filter(place => place !== null);
@@ -428,8 +429,8 @@ async function showSuggestion() {
     }, 600);
 
     // Fetch place details from Google Places API
-    // Use URL if available, otherwise fall back to name
-    const searchInput = currentSuggestion.url || currentSuggestion.name;
+    // Priority: Place ID > URL > Name
+    const searchInput = currentSuggestion.placeId || currentSuggestion.url || currentSuggestion.name;
     const placeDetails = await fetchPlaceDetails(searchInput);
 
     if (placeDetails) {
