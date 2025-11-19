@@ -257,22 +257,31 @@ function savePlacesCache(cache) {
     }
 }
 
-// Extract Place ID from Google Maps URL if present
+// Extract Place ID from input (URL or direct Place ID)
 function extractPlaceId(input) {
-    // Only try to extract Place ID if input looks like a URL
+    if (!input) return null;
+
+    // Check if input is already a Place ID (starts with ChIJ, typically 27+ chars)
+    if (input.startsWith('ChIJ') && input.length >= 20) {
+        return input;
+    }
+
+    // Only try to extract from URL if input looks like a URL
     if (!input.includes('http') && !input.includes('google.com/maps')) {
         return null;
     }
 
-    // Look for Place ID in the !1s parameter
-    // Valid Place IDs start with letters (not 0x which is a hex coordinate)
-    const placeIdMatch = input.match(/!1s([A-Za-z][A-Za-z0-9_-]+)(?:!|$)/);
+    // Look for Place ID in the !1s parameter or !8m2!3d
+    // Valid Place IDs start with ChIJ or similar patterns
+    const placeIdMatch = input.match(/!1s(ChIJ[A-Za-z0-9_-]+)(?:!|$|&)/);
     if (placeIdMatch) {
-        const placeId = placeIdMatch[1];
-        // Place IDs are typically 27+ characters and don't start with 0x
-        if (placeId.length >= 20 && !placeId.startsWith('0x')) {
-            return placeId;
-        }
+        return placeIdMatch[1];
+    }
+
+    // Try alternative pattern in newer Google Maps URLs
+    const altMatch = input.match(/data=!4m[^!]*!3m[^!]*!1s(ChIJ[A-Za-z0-9_-]+)/);
+    if (altMatch) {
+        return altMatch[1];
     }
 
     return null;
