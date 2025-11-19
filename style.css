@@ -61,23 +61,34 @@ main {
     max-width: 400px;
 }
 
-.card h2 {
-    color: #333;
+#suggestion-card {
+    transition: transform 0.3s ease;
+}
+
+#suggestion-card h2 {
+    color: white;
     font-size: 1.3rem;
     margin-bottom: 1.5rem;
     text-align: center;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+#list-view .card h2 {
+    color: #333;
+    text-shadow: none;
 }
 
 .place-name {
-    font-size: 2rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #667eea;
+    color: white;
     text-align: center;
     margin: 2rem 0;
     min-height: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 
 .empty-state {
@@ -125,10 +136,24 @@ main {
     max-width: 400px;
     padding: 1.2rem;
     font-size: 1.1rem;
+    transition: all 0.3s ease;
 }
 
 .btn-primary:hover {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
+.btn-primary.picking {
+    animation: pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
 }
 
 .btn-secondary {
@@ -140,13 +165,26 @@ main {
     background: #e0e0e0;
 }
 
-.btn-danger {
-    background: #ff4757;
+#suggestion-card .btn-secondary {
+    background: rgba(255, 255, 255, 0.3);
     color: white;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+#suggestion-card .btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: rgba(255, 255, 255, 0.7);
+}
+
+.btn-danger {
+    background: rgba(255, 71, 87, 0.9);
+    color: white;
+    border: 2px solid rgba(255, 255, 255, 0.3);
 }
 
 .btn-danger:hover {
-    background: #ee5a6f;
+    background: rgba(238, 90, 111, 0.95);
     box-shadow: 0 4px 15px rgba(255, 71, 87, 0.4);
 }
 
@@ -299,4 +337,23 @@ input[type="text"]:focus {
     .bottom-nav {
         padding-bottom: max(0.5rem, env(safe-area-inset-bottom));
     }
+}
+
+/* Animations */
+@keyframes bounce-in {
+    0% {
+        transform: scale(0.8);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.bounce-in {
+    animation: bounce-in 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }

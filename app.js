@@ -1,6 +1,20 @@
 // Google Sheets CSV URL
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSuDfel6sZhxVaHJUCk5PEsp5c9pYTg3wo2-E7R6E2720CJD7WMJYTfDqpRruEZ4m2QSszaoOW2inqJ/pub?gid=0&single=true&output=csv';
 
+// Gradient color schemes
+const GRADIENTS = [
+    ['#FF6B6B', '#FFE66D'],  // Red to Yellow
+    ['#4ECDC4', '#44A08D'],  // Teal to Green
+    ['#F093FB', '#F5576C'],  // Pink to Red
+    ['#4facfe', '#00f2fe'],  // Blue to Cyan
+    ['#43e97b', '#38f9d7'],  // Green to Turquoise
+    ['#fa709a', '#fee140'],  // Pink to Yellow
+    ['#30cfd0', '#330867'],  // Cyan to Purple
+    ['#a8edea', '#fed6e3'],  // Mint to Pink
+    ['#ff9a56', '#ff6a88'],  // Orange to Pink
+    ['#ffecd2', '#fcb69f'],  // Cream to Peach
+];
+
 // State
 let places = [];
 let currentSuggestion = null;
@@ -120,15 +134,50 @@ function pickRandomPlace() {
     return availablePlaces[randomIndex];
 }
 
-// Display suggestion
+// Get random gradient for a place
+function getGradientForPlace(place) {
+    // Use the place name to generate a consistent index
+    let hash = 0;
+    for (let i = 0; i < place.length; i++) {
+        hash = place.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const index = Math.abs(hash) % GRADIENTS.length;
+    return GRADIENTS[index];
+}
+
+// Display suggestion with animation
 function showSuggestion() {
     if (places.length === 0) return;
 
-    currentSuggestion = pickRandomPlace();
-    suggestedToday.add(currentSuggestion);
-    placeName.textContent = currentSuggestion;
-    suggestionCard.classList.remove('hidden');
-    pickPlaceBtn.classList.add('hidden');
+    // Add picking animation
+    pickPlaceBtn.disabled = true;
+    pickPlaceBtn.textContent = 'Picking...';
+    pickPlaceBtn.classList.add('picking');
+
+    // Simulate picking delay for effect
+    setTimeout(() => {
+        currentSuggestion = pickRandomPlace();
+        suggestedToday.add(currentSuggestion);
+        placeName.textContent = currentSuggestion;
+
+        // Apply gradient background
+        const gradient = getGradientForPlace(currentSuggestion);
+        suggestionCard.style.background = `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`;
+
+        // Show card with animation
+        suggestionCard.classList.remove('hidden');
+        suggestionCard.classList.add('bounce-in');
+
+        pickPlaceBtn.classList.add('hidden');
+        pickPlaceBtn.disabled = false;
+        pickPlaceBtn.textContent = 'Pick a Place';
+        pickPlaceBtn.classList.remove('picking');
+
+        // Remove animation class after animation completes
+        setTimeout(() => {
+            suggestionCard.classList.remove('bounce-in');
+        }, 600);
+    }, 800);
 }
 
 // Hide suggestion
