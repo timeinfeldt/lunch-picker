@@ -1,10 +1,11 @@
-// Storage key
-const STORAGE_KEY = 'lunchPlaces';
+// Google Sheets CSV URL
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSuDfel6sZhxVaHJUCk5PEsp5c9pYTg3wo2-E7R6E2720CJD7WMJYTfDqpRruEZ4m2QSszaoOW2inqJ/pub?gid=0&single=true&output=csv';
 
 // State
 let places = [];
 let currentSuggestion = null;
 let suggestedToday = new Set();
+let isLoading = false;
 
 // DOM Elements
 const pickerView = document.getElementById('picker-view');
@@ -25,28 +26,73 @@ const closeListBtn = document.getElementById('close-list-btn');
 const placesList = document.getElementById('places-list');
 
 // Initialize app
-function init() {
-    loadPlaces();
-    updateUI();
+async function init() {
     attachEventListeners();
+    await loadPlacesFromSheet();
+    updateUI();
 }
 
-// Load places from localStorage
-function loadPlaces() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-        places = JSON.parse(stored);
+// Load places from Google Sheet
+async function loadPlacesFromSheet() {
+    isLoading = true;
+    updateLoadingState();
+
+    try {
+        const response = await fetch(SHEET_URL);
+        if (!response.ok) {
+            throw new Error('Failed to fetch places from Google Sheet');
+        }
+
+        const csvText = await response.text();
+        const rows = csvText.trim().split('\n');
+
+        // Parse CSV and filter out empty rows and header if present
+        places = rows
+            .map(row => row.trim())
+            .filter(row => row.length > 0)
+            .filter((row, index) => {
+                // Skip first row if it looks like a header
+                if (index === 0 && (row.toLowerCase().includes('place') || row.toLowerCase().includes('name'))) {
+                    return false;
+                }
+                return true;
+            });
+
+        isLoading = false;
+        updateLoadingState();
+    } catch (error) {
+        console.error('Error loading places:', error);
+        isLoading = false;
+        showError('Unable to load lunch places. Please check your connection and try again.');
     }
 }
 
-// Save places to localStorage
-function savePlaces() {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(places));
+// Show error message
+function showError(message) {
+    emptyState.innerHTML = `<p style="color: #ff4757;">${message}</p><button id="retry-btn" class="btn btn-primary" style="margin-top: 1rem;">Retry</button>`;
+    document.getElementById('retry-btn')?.addEventListener('click', async () => {
+        await loadPlacesFromSheet();
+        updateUI();
+    });
+}
+
+// Update loading state
+function updateLoadingState() {
+    if (isLoading) {
+        emptyState.innerHTML = '<p>Loading lunch places...</p>';
+        emptyState.classList.remove('hidden');
+        pickPlaceBtn.classList.add('hidden');
+    }
 }
 
 // Update UI based on state
 function updateUI() {
+    if (isLoading) {
+        return;
+    }
+
     if (places.length === 0) {
+        emptyState.innerHTML = '<p>No lunch places found in the Google Sheet.</p><p>Add some places to get started!</p>';
         emptyState.classList.remove('hidden');
         pickPlaceBtn.classList.add('hidden');
         suggestionCard.classList.add('hidden');
@@ -104,61 +150,27 @@ function handleNotToday() {
 
 // Handle "Never Again" action
 function handleNeverAgain() {
-    if (currentSuggestion && confirm(`Remove "${currentSuggestion}" permanently?`)) {
-        places = places.filter(place => place !== currentSuggestion);
-        suggestedToday.delete(currentSuggestion);
-        savePlaces();
+    if (currentSuggestion) {
+        alert(`To remove "${currentSuggestion}" permanently, please delete it from the Google Sheet.`);
         hideSuggestion();
-        updateUI();
-    }
-}
-
-// Add a new place
-function addPlace(placeName) {
-    const trimmedName = placeName.trim();
-    if (trimmedName && !places.includes(trimmedName)) {
-        places.push(trimmedName);
-        savePlaces();
-        updateUI();
-        return true;
-    }
-    return false;
-}
-
-// Remove a place from the list
-function removePlace(placeName) {
-    if (confirm(`Remove "${placeName}" from your list?`)) {
-        places = places.filter(place => place !== placeName);
-        suggestedToday.delete(placeName);
-        savePlaces();
-        renderPlacesList();
-        updateUI();
     }
 }
 
 // Render places list
 function renderPlacesList() {
     if (places.length === 0) {
-        placesList.innerHTML = '<p class="empty-list">No places added yet.</p>';
+        placesList.innerHTML = '<p class="empty-list">No places found.</p>';
         return;
     }
 
     const listHTML = places.map(place => `
         <div class="place-item">
             <span>${place}</span>
-            <button class="btn-remove" data-place="${place}">×</button>
         </div>
     `).join('');
 
     placesList.innerHTML = listHTML;
-
-    // Attach remove handlers
-    placesList.querySelectorAll('.btn-remove').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const placeName = e.target.getAttribute('data-place');
-            removePlace(placeName);
-        });
-    });
+    placesList.innerHTML += '<p class="list-note">Edit the Google Sheet to add or remove places.</p>';
 }
 
 // Event Listeners
@@ -171,30 +183,14 @@ function attachEventListeners() {
     neverAgainBtn.addEventListener('click', handleNeverAgain);
 
     // Navigation
-    navAddBtn.addEventListener('click', () => {
-        showView(addView);
-        placeInput.focus();
+    navAddBtn.addEventListener('click', async () => {
+        await loadPlacesFromSheet();
+        updateUI();
     });
 
     navListBtn.addEventListener('click', () => {
         renderPlacesList();
         showView(listView);
-    });
-
-    // Add place form
-    addPlaceForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        if (addPlace(placeInput.value)) {
-            placeInput.value = '';
-            showView(pickerView);
-        } else {
-            alert('Please enter a valid place name or avoid duplicates.');
-        }
-    });
-
-    cancelAddBtn.addEventListener('click', () => {
-        placeInput.value = '';
-        showView(pickerView);
     });
 
     closeListBtn.addEventListener('click', () => {

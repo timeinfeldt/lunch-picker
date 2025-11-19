@@ -213,6 +213,15 @@ input[type="text"]:focus {
     padding: 2rem 0;
 }
 
+.list-note {
+    text-align: center;
+    color: #999;
+    font-size: 0.9rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e0e0e0;
+}
+
 /* Bottom Navigation */
 .bottom-nav {
     position: fixed;

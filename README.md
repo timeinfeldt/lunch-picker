@@ -4,36 +4,47 @@ A simple, mobile-friendly web app to help you decide where to eat lunch. Never s
 
 ## Features
 
-- **Random Selection**: Get a random lunch place suggestion from your list
+- **Random Selection**: Get a random lunch place suggestion from your shared list
 - **Not Today**: Skip a suggestion if you're not feeling it
-- **Never Again**: Permanently remove places you never want to visit again
-- **Add Places**: Easily add new lunch spots to your rotation
-- **Manage List**: View and remove places from your list
+- **Google Sheets Integration**: Shared list powered by a public Google Sheet
 - **Mobile-Friendly**: Optimized for use on your phone
-- **Data Persistence**: Your places are saved locally in your browser
+- **Real-time Updates**: Refresh to get the latest places from the sheet
 
 ## How to Use
 
 1. Open the app in your browser
-2. Add lunch places using the "Add Place" button at the bottom
-3. Click "Pick a Place" to get a random suggestion
-4. Choose "Not Today" to skip to another place
-5. Choose "Never Again" to permanently remove a place from your list
-6. Use "My Places" to view and manage your entire list
+2. Click "Pick a Place" to get a random suggestion from the Google Sheet
+3. Choose "Not Today" to skip to another suggestion
+4. Use "Refresh" to reload the latest places from the Google Sheet
+5. Use "View List" to see all available lunch places
 
 ## Live Demo
 
-Visit the app at: `https://[your-username].github.io/lunch-picker/`
+Visit the app at: https://timeinfeldt.github.io/lunch-picker/
 
-## Local Development
+## Setting Up Your Own Google Sheet
 
-Simply open `index.html` in your browser. No build process or server required!
+1. Create a new Google Sheet
+2. Add lunch place names in a single column (one place per row)
+3. Optionally add a header row (e.g., "Place Name")
+4. Go to **File** → **Share** → **Publish to web**
+5. Select your sheet and choose **CSV** format
+6. Click **Publish** and copy the URL
+7. Update the `SHEET_URL` in [app.js](app.js:2) with your published CSV URL
+
+## Managing Lunch Places
+
+To add or remove places:
+1. Open your Google Sheet
+2. Add new places by typing them in new rows
+3. Delete places by removing rows
+4. Changes will appear in the app after clicking "Refresh"
 
 ## Technology
 
 - Pure HTML, CSS, and JavaScript
 - No dependencies or frameworks
-- Uses localStorage for data persistence
+- Fetches data from Google Sheets public CSV export
 
 ## Adding to Your Phone's Home Screen
 
@@ -49,8 +60,9 @@ Simply open `index.html` in your browser. No build process or server required!
 
 ## Notes
 
-- Data is stored locally in your browser's localStorage
-- Each user will have their own separate list
-- Clearing browser data will reset your list
+- Everyone using the app sees the same Google Sheet
+- The app fetches fresh data each time you refresh
+- To permanently remove a place, delete it from the Google Sheet
+- You can share the Google Sheet with friends so they can also edit it
 
 Enjoy your lunch decisions! 🍽️
