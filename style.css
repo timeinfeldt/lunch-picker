@@ -63,6 +63,8 @@ main {
 
 #suggestion-card {
     transition: transform 0.3s ease, opacity 0.3s ease;
+    position: relative;
+    overflow: hidden;
 }
 
 #suggestion-card h2 {
@@ -71,6 +73,35 @@ main {
     margin-bottom: 1.5rem;
     text-align: center;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.place-photo {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    background-size: cover;
+    background-position: center;
+    opacity: 0.3;
+    z-index: 1;
+    border-radius: 1rem 1rem 0 0;
+}
+
+.closed-badge {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    background: rgba(255, 71, 87, 0.95);
+    color: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 600;
+    z-index: 3;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 
@@ -85,6 +116,54 @@ main {
     align-items: center;
     justify-content: center;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.place-rating {
+    color: white;
+    text-align: center;
+    font-size: 1rem;
+    margin: 0.5rem 0 1rem;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    position: relative;
+    z-index: 2;
+}
+
+.place-rating .stars {
+    font-size: 1.2rem;
+    letter-spacing: 2px;
+}
+
+.place-rating .rating-number {
+    font-weight: 600;
+    margin-left: 0.3rem;
+}
+
+.place-review {
+    background: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    margin: 1rem 0 1.5rem;
+    color: white;
+    font-size: 0.95rem;
+    line-height: 1.5;
+    position: relative;
+    z-index: 2;
+}
+
+.review-text {
+    font-style: italic;
+    margin-bottom: 0.5rem;
+}
+
+.review-author {
+    text-align: right;
+    font-size: 0.85rem;
+    opacity: 0.9;
+    font-weight: 500;
 }
 
 .empty-state {
@@ -107,6 +186,8 @@ main {
     display: flex;
     gap: 1rem;
     margin-top: 1rem;
+    position: relative;
+    z-index: 2;
 }
 
 .btn {
