@@ -116,13 +116,21 @@ function updateUI() {
 
 // Pick a random place
 function pickRandomPlace() {
-    // Filter out places already suggested today
-    const availablePlaces = places.filter(place => !suggestedToday.has(place));
+    // Filter out places already suggested today AND the current suggestion
+    let availablePlaces = places.filter(place =>
+        !suggestedToday.has(place) && place !== currentSuggestion
+    );
 
+    // If only the current suggestion is left, allow it to repeat
     if (availablePlaces.length === 0) {
-        // All places have been suggested, reset
+        // All places have been suggested, reset but keep current out
         suggestedToday.clear();
-        return pickRandomPlace();
+        availablePlaces = places.filter(place => place !== currentSuggestion);
+
+        // If we only have one place total, just return it
+        if (availablePlaces.length === 0) {
+            return currentSuggestion;
+        }
     }
 
     const randomIndex = Math.floor(Math.random() * availablePlaces.length);
