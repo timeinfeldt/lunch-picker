@@ -39,6 +39,11 @@ async function init() {
     attachEventListeners();
     await loadPlacesFromSheet();
     updateUI();
+
+    // Show initial suggestion if places are available
+    if (places.length > 0) {
+        showSuggestion();
+    }
 }
 
 // Load places from Google Sheet
@@ -107,7 +112,8 @@ function updateUI() {
         suggestionCard.classList.add('hidden');
     } else {
         emptyState.classList.add('hidden');
-        pickPlaceBtn.classList.remove('hidden');
+        // Keep pick button hidden since we show suggestions automatically
+        pickPlaceBtn.classList.add('hidden');
     }
 }
 
@@ -149,35 +155,22 @@ function getGradientForPlace(place) {
 function showSuggestion() {
     if (places.length === 0) return;
 
-    // Add picking animation
-    pickPlaceBtn.disabled = true;
-    pickPlaceBtn.textContent = 'Picking...';
-    pickPlaceBtn.classList.add('picking');
+    currentSuggestion = pickRandomPlace();
+    suggestedToday.add(currentSuggestion);
+    placeName.textContent = currentSuggestion;
 
-    // Simulate picking delay for effect
+    // Apply gradient background
+    const gradient = getGradientForPlace(currentSuggestion);
+    suggestionCard.style.background = `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`;
+
+    // Show card with animation
+    suggestionCard.classList.remove('hidden');
+    suggestionCard.classList.add('bounce-in');
+
+    // Remove animation class after animation completes
     setTimeout(() => {
-        currentSuggestion = pickRandomPlace();
-        suggestedToday.add(currentSuggestion);
-        placeName.textContent = currentSuggestion;
-
-        // Apply gradient background
-        const gradient = getGradientForPlace(currentSuggestion);
-        suggestionCard.style.background = `linear-gradient(135deg, ${gradient[0]} 0%, ${gradient[1]} 100%)`;
-
-        // Show card with animation
-        suggestionCard.classList.remove('hidden');
-        suggestionCard.classList.add('bounce-in');
-
-        pickPlaceBtn.classList.add('hidden');
-        pickPlaceBtn.disabled = false;
-        pickPlaceBtn.textContent = 'Pick a Place';
-        pickPlaceBtn.classList.remove('picking');
-
-        // Remove animation class after animation completes
-        setTimeout(() => {
-            suggestionCard.classList.remove('bounce-in');
-        }, 600);
-    }, 800);
+        suggestionCard.classList.remove('bounce-in');
+    }, 600);
 }
 
 // Hide suggestion
@@ -189,7 +182,16 @@ function hideSuggestion() {
 
 // Handle "Not Today" action
 function handleNotToday() {
-    hideSuggestion();
+    // Add fade out animation
+    suggestionCard.style.opacity = '0';
+    suggestionCard.style.transform = 'scale(0.95)';
+
+    // Show next suggestion after brief transition
+    setTimeout(() => {
+        suggestionCard.style.opacity = '1';
+        suggestionCard.style.transform = 'scale(1)';
+        showSuggestion();
+    }, 300);
 }
 
 // Handle "Never Again" action
@@ -219,9 +221,6 @@ function renderPlacesList() {
 
 // Event Listeners
 function attachEventListeners() {
-    // Pick place
-    pickPlaceBtn.addEventListener('click', showSuggestion);
-
     // Not today / Never again
     notTodayBtn.addEventListener('click', handleNotToday);
     neverAgainBtn.addEventListener('click', handleNeverAgain);
