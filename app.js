@@ -259,6 +259,11 @@ function savePlacesCache(cache) {
 
 // Extract Place ID from Google Maps URL if present
 function extractPlaceId(input) {
+    // Only try to extract Place ID if input looks like a URL
+    if (!input.includes('http') && !input.includes('google.com/maps')) {
+        return null;
+    }
+
     // Check if input is a Google Maps URL
     const placeIdMatch = input.match(/place\/[^\/]+\/data=.*!1s([^!]+)/);
     if (placeIdMatch) {
