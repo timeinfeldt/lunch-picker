@@ -1,5 +1,6 @@
-// Google Sheets CSV URL
+// Google Sheets URLs
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSuDfel6sZhxVaHJUCk5PEsp5c9pYTg3wo2-E7R6E2720CJD7WMJYTfDqpRruEZ4m2QSszaoOW2inqJ/pub?gid=0&single=true&output=csv';
+const SHEET_EDIT_URL = 'https://docs.google.com/spreadsheets/d/1XMbc1rDc8Bt2Wl1OlD7PEBzTNkC-BknEbVMAOEptEew/edit?usp=sharing';
 
 // Gradient color schemes
 const GRADIENTS = [
@@ -22,17 +23,12 @@ let suggestedToday = new Set();
 let isLoading = false;
 
 // DOM Elements
-const pickerView = document.getElementById('picker-view');
-const listView = document.getElementById('list-view');
 const suggestionCard = document.getElementById('suggestion-card');
 const emptyState = document.getElementById('empty-state');
 const placeName = document.getElementById('place-name');
 const pickPlaceBtn = document.getElementById('pick-place-btn');
 const notTodayBtn = document.getElementById('not-today-btn');
 const neverAgainBtn = document.getElementById('never-again-btn');
-const navListBtn = document.getElementById('nav-list-btn');
-const closeListBtn = document.getElementById('close-list-btn');
-const placesList = document.getElementById('places-list');
 
 // Initialize app
 async function init() {
@@ -117,13 +113,6 @@ function updateUI() {
     }
 }
 
-// Show a view
-function showView(view) {
-    pickerView.classList.add('hidden');
-    addView.classList.add('hidden');
-    listView.classList.add('hidden');
-    view.classList.remove('hidden');
-}
 
 // Pick a random place
 function pickRandomPlace() {
@@ -197,26 +186,12 @@ function handleNotToday() {
 // Handle "Never Again" action
 function handleNeverAgain() {
     if (currentSuggestion) {
-        alert(`To remove "${currentSuggestion}" permanently, please delete it from the Google Sheet.`);
-        hideSuggestion();
+        if (confirm(`Remove "${currentSuggestion}" from the list?\n\nThis will open the Google Sheet where you can delete it.`)) {
+            window.open(SHEET_EDIT_URL, '_blank');
+        }
+        // Continue to next suggestion
+        handleNotToday();
     }
-}
-
-// Render places list
-function renderPlacesList() {
-    if (places.length === 0) {
-        placesList.innerHTML = '<p class="empty-list">No places found.</p>';
-        return;
-    }
-
-    const listHTML = places.map(place => `
-        <div class="place-item">
-            <span>${place}</span>
-        </div>
-    `).join('');
-
-    placesList.innerHTML = listHTML;
-    placesList.innerHTML += '<p class="list-note">Edit the Google Sheet to add or remove places.</p>';
 }
 
 // Event Listeners
@@ -224,16 +199,6 @@ function attachEventListeners() {
     // Not today / Never again
     notTodayBtn.addEventListener('click', handleNotToday);
     neverAgainBtn.addEventListener('click', handleNeverAgain);
-
-    // Navigation
-    navListBtn.addEventListener('click', () => {
-        renderPlacesList();
-        showView(listView);
-    });
-
-    closeListBtn.addEventListener('click', () => {
-        showView(pickerView);
-    });
 }
 
 // Start the app
