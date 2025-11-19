@@ -264,16 +264,15 @@ function extractPlaceId(input) {
         return null;
     }
 
-    // Check if input is a Google Maps URL
-    const placeIdMatch = input.match(/place\/[^\/]+\/data=.*!1s([^!]+)/);
+    // Look for Place ID in the !1s parameter
+    // Valid Place IDs start with letters (not 0x which is a hex coordinate)
+    const placeIdMatch = input.match(/!1s([A-Za-z][A-Za-z0-9_-]+)(?:!|$)/);
     if (placeIdMatch) {
-        return placeIdMatch[1];
-    }
-
-    // Alternative format: /maps/place/Name/@lat,lng,zoom/data=...!1s<placeId>
-    const altMatch = input.match(/!1s([A-Za-z0-9_-]+)/);
-    if (altMatch && input.includes('google.com/maps')) {
-        return altMatch[1];
+        const placeId = placeIdMatch[1];
+        // Place IDs are typically 27+ characters and don't start with 0x
+        if (placeId.length >= 20 && !placeId.startsWith('0x')) {
+            return placeId;
+        }
     }
 
     return null;
