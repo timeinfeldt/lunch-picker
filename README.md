@@ -35,11 +35,18 @@ Visit the app at: https://timeinfeldt.github.io/lunch-picker/
    - Create a new project or select an existing one
    - Enable the "Places API (New)"
    - Create an API key
+   - **Important**: Restrict the API key to prevent abuse:
+     - Go to "API restrictions" → Select "Restrict key" → Choose "Places API (New)"
+     - Go to "Application restrictions" → Select "HTTP referrers (web sites)"
+     - Add your GitHub Pages URL (e.g., `https://yourusername.github.io/lunch-picker/*`)
+     - Set a quota limit in the Google Cloud Console to prevent unexpected charges
    - Add the key to your `config.js`
+
+   **Note**: For GitHub Pages, the API key will be visible in the deployed code. The restrictions above help prevent abuse, but for maximum security, consider using a serverless backend to proxy API calls.
 
 3. **Set up your Google Sheet** (see next section)
 
-**Note**: `config.js` is gitignored and will not be committed to the repository. This keeps your API keys and sheet URLs secure.
+**Note**: `config.js` is gitignored and will not be committed to your main repository. However, for GitHub Pages deployment, you'll need to add it to the gh-pages branch. Make sure to use API key restrictions (see above) to secure it.
 
 ## Setting Up Your Own Google Sheet
 
