@@ -5,18 +5,18 @@ const SHEET_EDIT_URL = 'https://docs.google.com/spreadsheets/d/1XMbc1rDc8Bt2Wl1O
 // Google Places API
 const PLACES_API_KEY = 'AIzaSyClwWstOrlxQPR73myHPVE1tGT9MvTOjRw';
 
-// Gradient color schemes
+// Gradient color schemes (food-friendly warm tones)
 const GRADIENTS = [
     ['#FF6B6B', '#FFE66D'],  // Red to Yellow
-    ['#4ECDC4', '#44A08D'],  // Teal to Green
-    ['#F093FB', '#F5576C'],  // Pink to Red
-    ['#4facfe', '#00f2fe'],  // Blue to Cyan
-    ['#43e97b', '#38f9d7'],  // Green to Turquoise
-    ['#fa709a', '#fee140'],  // Pink to Yellow
-    ['#30cfd0', '#330867'],  // Cyan to Purple
-    ['#a8edea', '#fed6e3'],  // Mint to Pink
-    ['#ff9a56', '#ff6a88'],  // Orange to Pink
-    ['#ffecd2', '#fcb69f'],  // Cream to Peach
+    ['#FF8C42', '#FFC837'],  // Orange to Golden
+    ['#E94B3C', '#FFAB73'],  // Red-Orange to Peach
+    ['#43A047', '#8BC34A'],  // Green to Light Green
+    ['#FFB347', '#FFCC33'],  // Tangerine to Yellow
+    ['#D84315', '#FF8A65'],  // Deep Orange to Light Orange
+    ['#689F38', '#AED581'],  // Olive to Lime
+    ['#F4511E', '#FFB74D'],  // Flame to Orange
+    ['#C62828', '#FF6F00'],  // Deep Red to Amber
+    ['#FFA726', '#FFEB3B'],  // Orange to Yellow
 ];
 
 // State
@@ -82,6 +82,37 @@ async function init() {
     }
 }
 
+// Parse CSV row handling quoted fields
+function parseCSVRow(row) {
+    const result = [];
+    let current = '';
+    let inQuotes = false;
+
+    for (let i = 0; i < row.length; i++) {
+        const char = row[i];
+        const nextChar = row[i + 1];
+
+        if (char === '"') {
+            if (inQuotes && nextChar === '"') {
+                // Escaped quote
+                current += '"';
+                i++; // Skip next quote
+            } else {
+                // Toggle quote state
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            // End of field
+            result.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    result.push(current); // Add last field
+    return result;
+}
+
 // Load places from Google Sheet
 async function loadPlacesFromSheet() {
     isLoading = true;
@@ -104,7 +135,7 @@ async function loadPlacesFromSheet() {
                     return null;
                 }
 
-                const columns = row.split(',');
+                const columns = parseCSVRow(row);
                 if (columns.length === 0 || !columns[0].trim()) {
                     return null;
                 }
