@@ -287,8 +287,8 @@ async function fetchPlaceDetails(placeInput) {
                     locationBias: {
                         circle: {
                             center: {
-                                latitude: 37.7749,
-                                longitude: -122.4194
+                                latitude: 52.5200,
+                                longitude: 13.4050
                             },
                             radius: 10000.0
                         }
