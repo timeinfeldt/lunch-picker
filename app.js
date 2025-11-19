@@ -9,7 +9,6 @@ let isLoading = false;
 
 // DOM Elements
 const pickerView = document.getElementById('picker-view');
-const addView = document.getElementById('add-view');
 const listView = document.getElementById('list-view');
 const suggestionCard = document.getElementById('suggestion-card');
 const emptyState = document.getElementById('empty-state');
@@ -17,11 +16,7 @@ const placeName = document.getElementById('place-name');
 const pickPlaceBtn = document.getElementById('pick-place-btn');
 const notTodayBtn = document.getElementById('not-today-btn');
 const neverAgainBtn = document.getElementById('never-again-btn');
-const addPlaceForm = document.getElementById('add-place-form');
-const placeInput = document.getElementById('place-input');
-const navAddBtn = document.getElementById('nav-add-btn');
 const navListBtn = document.getElementById('nav-list-btn');
-const cancelAddBtn = document.getElementById('cancel-add-btn');
 const closeListBtn = document.getElementById('close-list-btn');
 const placesList = document.getElementById('places-list');
 
@@ -183,11 +178,6 @@ function attachEventListeners() {
     neverAgainBtn.addEventListener('click', handleNeverAgain);
 
     // Navigation
-    navAddBtn.addEventListener('click', async () => {
-        await loadPlacesFromSheet();
-        updateUI();
-    });
-
     navListBtn.addEventListener('click', () => {
         renderPlacesList();
         showView(listView);

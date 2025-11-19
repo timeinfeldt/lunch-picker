@@ -8,15 +8,15 @@ A simple, mobile-friendly web app to help you decide where to eat lunch. Never s
 - **Not Today**: Skip a suggestion if you're not feeling it
 - **Google Sheets Integration**: Shared list powered by a public Google Sheet
 - **Mobile-Friendly**: Optimized for use on your phone
-- **Real-time Updates**: Refresh to get the latest places from the sheet
+- **Always Fresh**: Latest places loaded automatically when you open the app
 
 ## How to Use
 
 1. Open the app in your browser
 2. Click "Pick a Place" to get a random suggestion from the Google Sheet
 3. Choose "Not Today" to skip to another suggestion
-4. Use "Refresh" to reload the latest places from the Google Sheet
-5. Use "View List" to see all available lunch places
+4. Use "View List" to see all available lunch places
+5. Refresh the page to load the latest changes from the Google Sheet
 
 ## Live Demo
 
@@ -38,7 +38,7 @@ To add or remove places:
 1. Open your Google Sheet
 2. Add new places by typing them in new rows
 3. Delete places by removing rows
-4. Changes will appear in the app after clicking "Refresh"
+4. Changes will appear in the app after refreshing the page
 
 ## Technology
 
@@ -61,7 +61,7 @@ To add or remove places:
 ## Notes
 
 - Everyone using the app sees the same Google Sheet
-- The app fetches fresh data each time you refresh
+- The app fetches fresh data each time you open or refresh the page
 - To permanently remove a place, delete it from the Google Sheet
 - You can share the Google Sheet with friends so they can also edit it
 

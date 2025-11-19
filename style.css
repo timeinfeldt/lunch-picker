@@ -258,6 +258,11 @@ input[type="text"]:focus {
     color: #667eea;
 }
 
+.nav-btn-single {
+    max-width: 200px;
+    margin: 0 auto;
+}
+
 .nav-icon {
     font-size: 1.5rem;
 }
