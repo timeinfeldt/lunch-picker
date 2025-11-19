@@ -1,9 +1,9 @@
-// Google Sheets URLs
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSuDfel6sZhxVaHJUCk5PEsp5c9pYTg3wo2-E7R6E2720CJD7WMJYTfDqpRruEZ4m2QSszaoOW2inqJ/pub?gid=0&single=true&output=csv';
-const SHEET_EDIT_URL = 'https://docs.google.com/spreadsheets/d/1XMbc1rDc8Bt2Wl1OlD7PEBzTNkC-BknEbVMAOEptEew/edit?usp=sharing';
-
-// Google Places API
-const PLACES_API_KEY = 'AIzaSyClwWstOrlxQPR73myHPVE1tGT9MvTOjRw';
+// Configuration loaded from config.js
+// Note: config.js is gitignored and must be created from config.example.js
+const SHEET_URL = CONFIG.SHEET_URL;
+const SHEET_EDIT_URL = CONFIG.SHEET_EDIT_URL;
+const PLACES_API_KEY = CONFIG.PLACES_API_KEY;
+const DEFAULT_LOCATION = CONFIG.DEFAULT_LOCATION;
 
 // Gradient color schemes (food-friendly warm tones)
 const GRADIENTS = [
@@ -332,8 +332,8 @@ async function fetchPlaceDetails(placeInput) {
                     locationBias: {
                         circle: {
                             center: {
-                                latitude: 52.5200,
-                                longitude: 13.4050
+                                latitude: DEFAULT_LOCATION.lat,
+                                longitude: DEFAULT_LOCATION.lng
                             },
                             radius: 10000.0
                         }

@@ -8,3 +8,8 @@
 # Temporary files
 *.tmp
 *~
+
+# Environment variables and secrets
+.env
+config.js
+secrets.js

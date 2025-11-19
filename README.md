@@ -22,15 +22,38 @@ A simple, mobile-friendly web app to help you decide where to eat lunch. Never s
 
 Visit the app at: https://timeinfeldt.github.io/lunch-picker/
 
+## Initial Setup
+
+1. **Create your configuration file**:
+   - Copy `config.example.js` to `config.js`
+   - Fill in your Google Places API key (see below)
+   - Add your Google Sheet URLs (see below)
+   - Update the default location coordinates if needed
+
+2. **Get a Google Places API Key**:
+   - Visit [Google Cloud Console](https://console.cloud.google.com/apis/credentials)
+   - Create a new project or select an existing one
+   - Enable the "Places API (New)"
+   - Create an API key
+   - Add the key to your `config.js`
+
+3. **Set up your Google Sheet** (see next section)
+
+**Note**: `config.js` is gitignored and will not be committed to the repository. This keeps your API keys and sheet URLs secure.
+
 ## Setting Up Your Own Google Sheet
 
 1. Create a new Google Sheet
-2. Add lunch place names in a single column (one place per row)
-3. Optionally add a header row (e.g., "Place Name")
+2. Add three columns: **Name**, **URL**, **Place ID**
+   - **Name**: Display name for the restaurant
+   - **URL** (optional): Google Maps URL for the place
+   - **Place ID** (optional): Google Place ID (most reliable)
+3. Add a header row: `Name`, `URL`, `Place ID`
 4. Go to **File** → **Share** → **Publish to web**
 5. Select your sheet and choose **CSV** format
-6. Click **Publish** and copy the URL
-7. Update the `SHEET_URL` in [app.js](app.js:2) with your published CSV URL
+6. Click **Publish** and copy the published CSV URL
+7. For the edit URL, use the regular sharing link (File → Share → Copy link)
+8. Add both URLs to your `config.js`
 
 ## Managing Lunch Places
 
