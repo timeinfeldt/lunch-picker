@@ -20,7 +20,12 @@ const GRADIENTS = [
 let places = [];
 let currentSuggestion = null;
 let suggestedToday = new Set();
+let skippedToday = new Set();
 let isLoading = false;
+
+// localStorage keys
+const STORAGE_KEY_SKIPPED = 'lunchPicker_skippedToday';
+const STORAGE_KEY_DATE = 'lunchPicker_lastDate';
 
 // DOM Elements
 const suggestionCard = document.getElementById('suggestion-card');
@@ -30,8 +35,39 @@ const pickPlaceBtn = document.getElementById('pick-place-btn');
 const notTodayBtn = document.getElementById('not-today-btn');
 const neverAgainBtn = document.getElementById('never-again-btn');
 
+// Get today's date string
+function getTodayString() {
+    const today = new Date();
+    return `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
+}
+
+// Load skipped places from localStorage
+function loadSkippedPlaces() {
+    const lastDate = localStorage.getItem(STORAGE_KEY_DATE);
+    const todayString = getTodayString();
+
+    // If it's a new day, clear the skipped list
+    if (lastDate !== todayString) {
+        localStorage.removeItem(STORAGE_KEY_SKIPPED);
+        localStorage.setItem(STORAGE_KEY_DATE, todayString);
+        skippedToday.clear();
+    } else {
+        // Load skipped places from today
+        const stored = localStorage.getItem(STORAGE_KEY_SKIPPED);
+        if (stored) {
+            skippedToday = new Set(JSON.parse(stored));
+        }
+    }
+}
+
+// Save skipped places to localStorage
+function saveSkippedPlaces() {
+    localStorage.setItem(STORAGE_KEY_SKIPPED, JSON.stringify([...skippedToday]));
+}
+
 // Initialize app
 async function init() {
+    loadSkippedPlaces();
     attachEventListeners();
     await loadPlacesFromSheet();
     updateUI();
@@ -116,20 +152,29 @@ function updateUI() {
 
 // Pick a random place
 function pickRandomPlace() {
-    // Filter out places already suggested today AND the current suggestion
+    // Filter out: places already suggested, skipped today, AND the current suggestion
     let availablePlaces = places.filter(place =>
-        !suggestedToday.has(place) && place !== currentSuggestion
+        !suggestedToday.has(place) &&
+        !skippedToday.has(place) &&
+        place !== currentSuggestion
     );
 
-    // If only the current suggestion is left, allow it to repeat
+    // If no places available, reset suggested (but keep skipped and current)
     if (availablePlaces.length === 0) {
-        // All places have been suggested, reset but keep current out
         suggestedToday.clear();
-        availablePlaces = places.filter(place => place !== currentSuggestion);
+        availablePlaces = places.filter(place =>
+            !skippedToday.has(place) &&
+            place !== currentSuggestion
+        );
 
-        // If we only have one place total, just return it
+        // If still no places (all skipped), allow skipped places but not current
         if (availablePlaces.length === 0) {
-            return currentSuggestion;
+            availablePlaces = places.filter(place => place !== currentSuggestion);
+
+            // If we only have one place total, just return it
+            if (availablePlaces.length === 0) {
+                return currentSuggestion;
+            }
         }
     }
 
@@ -179,6 +224,12 @@ function hideSuggestion() {
 
 // Handle "Not Today" action
 function handleNotToday() {
+    // Add current suggestion to skipped list
+    if (currentSuggestion) {
+        skippedToday.add(currentSuggestion);
+        saveSkippedPlaces();
+    }
+
     // Add fade out animation
     suggestionCard.style.opacity = '0';
     suggestionCard.style.transform = 'scale(0.95)';
